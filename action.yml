@@ -1,0 +1,64 @@
+name: 'Husarnet'
+description: 'Accessing other devices from Husarnet VPN network (https://husarnet.com/husarnet/husarnet) in GitHub workflow'
+inputs:
+  join-code:
+    description: 'A Join Code for the Husarnet network you want to connect to'
+    required: true
+  hostname: 
+    description: 'A hostname under which this workflow will be available in your Husarnet network'
+    default: 'my-github-action'
+  cache-key: 
+    description: 'Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer.'
+    default: 'husarnet-volume'
+outputs:
+  ipv6:
+    description: "Husarnet IPv6 address of this hosts"
+    value: ${{ steps.output-ipv6.outputs.host-ipv6 }}
+branding:
+  icon: 'box'
+  color: 'red'
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Husarnet
+      id: cache-husarnet-v
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/husarnet_cache
+        key: ${{ inputs.cache-key }}
+
+    - name: Installing Husarnet
+      shell: bash
+      run: curl https://install.husarnet.com/install.sh | sudo bash
+
+    - name: Restoring /var/lib/husarnet from a cache
+      shell: bash
+      run: |  
+        sudo \cp -af ${{ github.workspace }}/husarnet_cache/. /var/lib/husarnet
+        sudo chown -R root:root /var/lib/husarnet
+
+    - name: Waiting for Husarnet to be ready
+      shell: bash
+      run: |  
+        sudo systemctl restart husarnet
+        echo "Waiting for Husarnet to be ready"
+        while [ $(sudo husarnet status | grep "ERROR" | wc -l) -gt 0 ]; do echo .; sleep 1; done
+        echo "done"
+        sudo husarnet status
+
+    - name: Saving IPv6 to the action's output
+      id: output-ipv6
+      shell: bash
+      run: echo "::set-output name=host-ipv6::$(echo $(sudo husarnet status | grep "Husarnet IP address" | sed -r 's/Husarnet\sIP\saddress:\s(.*)$/\1/g'))"
+  
+    - name: Joining to Husarnet network
+      shell: bash
+      run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
+
+    - name: Saving /var/lib/husarnet to cache
+      shell: bash
+      run: |
+        mkdir -p ${{ github.workspace }}/husarnet_cache
+        sudo \cp -af /var/lib/husarnet/. ${{ github.workspace }}/husarnet_cache
+        sudo chmod -R a+rwx ${{ github.workspace }}/husarnet_cache

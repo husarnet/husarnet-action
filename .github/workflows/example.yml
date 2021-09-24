@@ -1,0 +1,21 @@
+name: Print Husarnet status
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Connecting to Husarnet VPN network
+      uses: ./
+      with:
+        join-code: ${{ secrets.HUSARNET_JOINCODE }}
+
+    - name: Print Husarnet IPv6 addr
+      run: echo ${{ steps.husarnet.outputs.ipv6 }}
+
+    - name: Ping Husarnet Dashboard
+      run: ping6 -c 10 fc94:b01d:1803:8dd8:b293:5c7d:7639:932a
+
+    - name: Stop husarnet
+      run: sudo systemctl stop husarnet
