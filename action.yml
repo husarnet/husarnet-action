@@ -34,7 +34,8 @@ runs:
 
     - name: Restoring /var/lib/husarnet from a cache
       shell: bash
-      run: |  
+      run: |
+        mkdir -p ${{ github.workspace }}/husarnet_cache
         sudo \cp -af ${{ github.workspace }}/husarnet_cache/. /var/lib/husarnet
         sudo chown -R root:root /var/lib/husarnet
 
@@ -59,6 +60,5 @@ runs:
     - name: Saving /var/lib/husarnet to cache
       shell: bash
       run: |
-        mkdir -p ${{ github.workspace }}/husarnet_cache
         sudo \cp -af /var/lib/husarnet/. ${{ github.workspace }}/husarnet_cache
         sudo chmod -R a+rwx ${{ github.workspace }}/husarnet_cache
