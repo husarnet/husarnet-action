@@ -1,5 +1,5 @@
 name: 'Husarnet'
-description: 'Accessing other devices from Husarnet VPN network (https://husarnet.com/husarnet/husarnet) in GitHub workflow'
+description: 'Accessing other devices from Husarnet VPN network (https://husarnet.com/husarnet/husarnet) in your GitHub workflow'
 inputs:
   join-code:
     description: 'A Join Code for the Husarnet network you want to connect to'

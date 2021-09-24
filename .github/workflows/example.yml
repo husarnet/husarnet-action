@@ -1,10 +1,12 @@
-name: Print Husarnet status
+name: Ping Husarnet Dashboard and print Husarnet status
 on: push
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Connecting to Husarnet VPN network
       uses: ./
