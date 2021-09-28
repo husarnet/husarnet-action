@@ -19,9 +19,6 @@ jobs:
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
 
-    - name: Print Husarnet IPv6 addr
-      run: echo ${{ steps.husarnet.outputs.ipv6 }}
-
     - name: Ping other peer
       run: ping6 -c 10 my-laptop
 
