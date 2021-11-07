@@ -71,7 +71,7 @@ runs:
       run: sudo husarnet join ${{ inputs.join-code }} github-actions-${{ env.REPOSITORY_NAME }}
 
     - name: Joining to Husarnet network (non-default)
-      if: ${{ inputs.hostname =! 'default-hostname' }}
+      if: ${{ inputs.hostname != 'default-hostname' }}
       shell: bash
       run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
 
