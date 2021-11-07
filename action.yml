@@ -6,7 +6,7 @@ inputs:
     required: true
   hostname: 
     description: 'A hostname under which this workflow will be available in your Husarnet network'
-    default: 'my-github-action'
+    default: 'default-hostname'
   cache-key: 
     description: 'Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer.'
     default: 'default-key'
@@ -21,7 +21,7 @@ branding:
 runs:
   using: "composite"
   steps:
-    - name: Setup default repository secret
+    - name: Setup repository name env for a default cache-key and hostname values
       if: ${{ inputs.cache-key == 'default-key' }}
       run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
       shell: bash
@@ -31,7 +31,7 @@ runs:
       uses: husarnet/cache@v2.always
       with:
         path: ${{ github.workspace }}/husarnet_cache
-        key: ${{ env.REPOSITORY_NAME }}-husarnet
+        key: husarnet-${{ env.REPOSITORY_NAME }}
 
     - name: Cache Husarnet (non-default)
       if: ${{ inputs.cache-key != 'default-key' }}
@@ -65,7 +65,13 @@ runs:
       shell: bash
       run: echo "::set-output name=host-ipv6::$(echo $(sudo husarnet status | grep "Husarnet IP address" | sed -r 's/Husarnet\sIP\saddress:\s(.*)$/\1/g'))"
   
-    - name: Joining to Husarnet network
+    - name: Joining to Husarnet network (default)
+      if: ${{ inputs.hostname == 'default-hostname' }}
+      shell: bash
+      run: sudo husarnet join ${{ inputs.join-code }} github-actions-${{ env.REPOSITORY_NAME }}
+
+    - name: Joining to Husarnet network (non-default)
+      if: ${{ inputs.hostname =! 'default-hostname' }}
       shell: bash
       run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
 

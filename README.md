@@ -40,8 +40,8 @@ jobs:
 | input | required | default value | description |
 | - | - | - | - |
 | `join-code` | yes |  | A Join Code for the Husarnet network you want to connect to. Find your Join Code at https://app.husarnet.com/  |
-| `hostname` | no | `my-github-action` | A hostname under which this workflow will be available in your Husarnet network. |
-| `cache-key` | no | `${{ env.REPOSITORY_NAME }}-husarnet` | Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer. Useful while using matrix. By default new Husarnet Client for a given repository name is created. You can reuse however the same Husarnet Client ID across multiple repos, by modifying `cache-key` value. In this case remember to have other Husarnet Clients in the same Husarnet network. |
+| `hostname` | no | `github-actions-<repo name>` | A hostname under which this workflow will be available in your Husarnet network. |
+| `cache-key` | no | `husarnet-<repo name>` | Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer. Useful while using matrix. By default new Husarnet Client for a given repository name is created. You can reuse however the same Husarnet Client ID across multiple repos, by modifying `cache-key` value. In this case remember to have other Husarnet Clients in the same Husarnet network. |
 
 ## Outputs
 
