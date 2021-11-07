@@ -1,6 +1,6 @@
 # Husarnet VPN Action for GitHub Actions
 
-Connecting your GitHub workflow to Husarnet VPN network.
+Connecting your GitHub workflow to Husarnet peer-to-peer VPN network. Useful for deployment to hosts that doesn't have public nor static IP address.
 
 ## Usage
 
@@ -34,14 +34,14 @@ jobs:
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
         hostname: my-hostname
-        cache-key: husarnet-v
+        cache-key: ${{ env.REPOSITORY_NAME }}-husarnet
 ```
 
 | input | required | default value | description |
 | - | - | - | - |
 | `join-code` | yes |  | A Join Code for the Husarnet network you want to connect to. Find your Join Code at https://app.husarnet.com/  |
 | `hostname` | no | `my-github-action` | A hostname under which this workflow will be available in your Husarnet network. |
-| `cache-key` | no | `husarnet-volume` | Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer. Useful while using matrix. |
+| `cache-key` | no | `${{ env.REPOSITORY_NAME }}-husarnet` | Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer. Useful while using matrix. By default new Husarnet Client for a given repository name is created. You can reuse however the same Husarnet Client ID across multiple repos, by modifying `cache-key` value. In this case remember to have othe Husarnet Clients in the same Husarnet network. |
 
 ## Outputs
 
