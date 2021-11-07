@@ -9,7 +9,7 @@ inputs:
     default: 'my-github-action'
   cache-key: 
     description: 'Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer.'
-    default: $(echo '${{ github.repository }}' | awk -F '/' '{print $2}')-husarnet
+    default: 'default-key'
 outputs:
   ipv6:
     description: "Husarnet IPv6 address of this hosts"
@@ -21,10 +21,20 @@ branding:
 runs:
   using: "composite"
   steps:
-    - run: echo ${{ inputs.cache-key }}
+    - name: Setup default repository secret
+      if: ${{ inputs.cache-key == 'default-key' }}
+      run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+      shell: bash
 
-    - name: Cache Husarnet
-      id: cache-husarnet-v
+    - name: Cache Husarnet (default)
+      if: ${{ inputs.cache-key == 'default-key' }}
+      uses: husarnet/cache@v2.always
+      with:
+        path: ${{ github.workspace }}/husarnet_cache
+        key: ${{ env.REPOSITORY_NAME }}-husarnet
+
+    - name: Cache Husarnet (non-default)
+      if: ${{ inputs.cache-key != 'default-key' }}
       uses: husarnet/cache@v2.always
       with:
         path: ${{ github.workspace }}/husarnet_cache
