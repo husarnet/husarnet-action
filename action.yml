@@ -23,7 +23,7 @@ runs:
   steps:
     - name: Cache Husarnet
       id: cache-husarnet-v
-      uses: husarnet/cache-always@v2.always
+      uses: husarnet/cache@v2.always
       with:
         path: ${{ github.workspace }}/husarnet_cache
         key: ${{ inputs.cache-key }}
