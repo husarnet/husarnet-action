@@ -9,6 +9,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Connecting to Husarnet VPN network
+      id: husarnet
       uses: ./
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
