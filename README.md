@@ -1,6 +1,6 @@
 # Husarnet VPN Action for GitHub Actions
 
-Connecting your GitHub workflow to Husarnet peer-to-peer VPN network. Useful for deployment to hosts that doesn't have public nor static IP address.
+Connecting your GitHub workflow to Husarnet peer-to-peer VPN network. Useful for deployment to hosts that don't have a public nor static IP address.
 
 ## Usage
 
