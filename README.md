@@ -15,7 +15,7 @@ jobs:
     steps:
 
     - name: Connecting to Husarnet VPN network
-      uses: husarnet/husarnet-action@v1
+      uses: husarnet/husarnet-action@v2
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
 
@@ -30,7 +30,7 @@ jobs:
 
 ```yaml
     - name: Husarnet VPN
-      uses: husarnet/husarnet-action@v1
+      uses: husarnet/husarnet-action@v2
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
         hostname: my-hostname
@@ -48,7 +48,7 @@ jobs:
 ```yaml
     - name: Husarnet VPN
       id: husarnet
-      uses: husarnet/husarnet-action@v1
+      uses: husarnet/husarnet-action@v2
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
         hostname: my-hostname
