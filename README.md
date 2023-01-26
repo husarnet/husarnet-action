@@ -55,7 +55,7 @@ jobs:
         cache-key: husarnet-v
     
     - name: Print IPv6
-      run: My IPv6 addr is ${{ steps.husarnet.outputs.ipv6 }}
+      run: echo My IPv6 addr is ${{ steps.husarnet.outputs.ipv6 }}
 ```
 
 | output | description |
