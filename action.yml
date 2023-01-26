@@ -63,8 +63,8 @@ runs:
     - name: Saving IPv6 to the action's output
       id: output-ipv6
       shell: bash
-      run: echo "::set-output name=host-ipv6::$(echo $(sudo husarnet status | grep "Husarnet IP address" | sed -r 's/Husarnet\sIP\saddress:\s(.*)$/\1/g'))"
-  
+      run: echo "host-ipv6=$(curl -s 127.0.0.1:16216/api/status | grep -i local_ip | cut -d '"' -f 4)" >> $GITHUB_OUTPUT
+
     - name: Joining to Husarnet network (default)
       if: ${{ inputs.hostname == 'default-hostname' }}
       shell: bash
