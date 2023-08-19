@@ -1,6 +1,26 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 
+const http = require('http');
+
+async function fetchAPIStatus() {
+    return new Promise((resolve, reject) => {
+        http.get('http://127.0.0.1:16216/api/status', (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                resolve(JSON.parse(data));
+            });
+        }).on('error', (err) => {
+            reject(err);
+        });
+    });
+}
+
 async function run() {
     try {
         const login = core.getInput('dashboard-login');
@@ -11,16 +31,18 @@ async function run() {
             // Login to Husarnet dashboard
             await exec.exec(`husarnet dashboard login ${login} ${password}`);
 
-            // Retrieve the local IP from Husarnet API and remove the device from dashboard
-            let localIp = '';
-            await exec.exec('curl -s 127.0.0.1:16216/api/status', [], {
-                listeners: {
-                    stdout: (data) => {
-                        localIp += data.toString();
-                    }
-                }
-            });
-            const parsedLocalIp = JSON.parse(localIp).result.local_ip;
+            let parsedLocalIp;
+            try {
+                const response = await fetchAPIStatus();
+                parsedLocalIp = response.result.local_ip;
+            } catch (err) {
+                console.error('Error fetching API status:', err);
+                core.setFailed("Timeout reached while waiting for API");
+                return;
+            }
+
+            console.log("removing: " + parsedLocalIp);
+
             if (parsedLocalIp) {
                 await exec.exec(`husarnet dashboard device rm ${parsedLocalIp}`);
             } else {
