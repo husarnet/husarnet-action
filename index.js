@@ -30,6 +30,7 @@ async function joinHusarnet(joinCode, hostname) {
                 }
             }
         });
+        core.setSecret(apiToken);
 
         const postData = `secret=${apiToken}&code=${joinCode}&hostname=${hostname}`;
         
