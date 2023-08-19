@@ -22,14 +22,19 @@ async function fetchAPIStatus() {
 
 async function joinHusarnet(joinCode, hostname) {
     return new Promise(async (resolve, reject) => {
-        let apiToken = '';
-        await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], {
-            listeners: {
-                stdout: (data) => {
-                    apiToken += data.toString().trim(); // get the API token from stdout
-                }
-            }
-        });
+        // let apiToken = '';
+        // await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], {
+        //     listeners: {
+        //         stdout: (data) => {
+        //             apiToken += data.toString().trim(); // get the API token from stdout
+        //         }
+        //     }
+        // });
+
+        const fs = require('fs').promises;
+        let apiToken = await fs.readFile('/var/lib/husarnet/daemon_api_token', 'utf-8');
+        apiToken = apiToken.trim();
+
         console.log("apiToken:" + apiToken);
         core.setSecret(apiToken);
 
