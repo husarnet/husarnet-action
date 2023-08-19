@@ -7,76 +7,21 @@ inputs:
   hostname: 
     description: 'A hostname under which this workflow will be available in your Husarnet network'
     default: 'default-hostname'
-  cache-key: 
-    description: 'Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer.'
-    default: 'default-key'
+  dashboard-login:
+    description: 'Login to the Husarnet Dashboard account allowing the Husarnet Groups management (like removing the device from group when the workflow ends)'
+  dashboard-password:
+    description: 'Password to the Husarnet Dashboard account allowing the Husarnet Groups management'
+  remove-host:
+    description: 'Remove the Husarnet host created by this action after the workflow ends'
+    default: 'true'
+
 outputs:
   ipv6:
-    description: "Husarnet IPv6 address of this hosts"
-    value: ${{ steps.output-ipv6.outputs.host-ipv6 }}
-branding:
-  icon: 'box'
-  color: 'red'
-  
+    description: "Husarnet IPv6 address of this host"
 runs:
-  using: "composite"
-  steps:
-    - name: Setup repository name env for a default cache-key and hostname values
-      if: ${{ inputs.cache-key == 'default-key' }}
-      run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Cache Husarnet (default)
-      if: ${{ inputs.cache-key == 'default-key' }}
-      uses: actions/cache@v3
-      with:
-        path: ${{ github.workspace }}/husarnet_cache
-        key: husarnet-${{ env.REPOSITORY_NAME }}
-
-    - name: Cache Husarnet (non-default)
-      if: ${{ inputs.cache-key != 'default-key' }}
-      uses: actions/cache@v3
-      with:
-        path: ${{ github.workspace }}/husarnet_cache
-        key: ${{ inputs.cache-key }}
-
-    - name: Installing Husarnet
-      shell: bash
-      run: curl https://install.husarnet.com/install.sh | sudo bash
-
-    - name: Restoring /var/lib/husarnet from a cache
-      shell: bash
-      run: |
-        mkdir -p ${{ github.workspace }}/husarnet_cache
-        sudo \cp -af ${{ github.workspace }}/husarnet_cache/. /var/lib/husarnet
-        sudo chown -R root:root /var/lib/husarnet
-
-    - name: Waiting for Husarnet to be ready
-      shell: bash
-      run: |  
-        sudo systemctl restart husarnet
-        echo "Waiting for Husarnet to be ready"
-        while [ $(sudo husarnet status | grep "ERROR" | wc -l) -gt 0 ]; do echo .; sleep 1; done
-        echo "done"
-        sudo husarnet status
-
-    - name: Saving IPv6 to the action's output
-      id: output-ipv6
-      shell: bash
-      run: echo "host-ipv6=$(curl -s 127.0.0.1:16216/api/status | grep -i local_ip | cut -d '"' -f 4)" >> $GITHUB_OUTPUT
-
-    - name: Joining to Husarnet network (default)
-      if: ${{ inputs.hostname == 'default-hostname' }}
-      shell: bash
-      run: sudo husarnet join ${{ inputs.join-code }} github-actions-${{ env.REPOSITORY_NAME }}
-
-    - name: Joining to Husarnet network (non-default)
-      if: ${{ inputs.hostname != 'default-hostname' }}
-      shell: bash
-      run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
-
-    - name: Saving /var/lib/husarnet to cache
-      shell: bash
-      run: |
-        sudo \cp -af /var/lib/husarnet/. ${{ github.workspace }}/husarnet_cache
-        sudo chmod -R a+rwx ${{ github.workspace }}/husarnet_cache
+    using: 'node12'
+    main: 'index.js'
+    post: 'cleanup.js'
+branding:
+    icon: 'box'
+    color: 'red'
