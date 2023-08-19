@@ -22,8 +22,6 @@ jobs:
     - name: Ping other peer
       run: ping6 -c 10 my-laptop
 
-    - name: Stop husarnet
-      run: sudo systemctl stop husarnet
 ```
 
 ## Inputs
