@@ -1,4 +1,24 @@
-// ... [Other module imports]
+const core = require('@actions/core');
+const exec = require('@actions/exec');
+const http = require('http');
+
+async function fetchAPIStatus() {
+    return new Promise((resolve, reject) => {
+        http.get('http://127.0.0.1:16216/api/status', (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                resolve(JSON.parse(data));
+            });
+        }).on('error', (err) => {
+            reject(err);
+        });
+    });
+}
 
 async function run() {
     try {
