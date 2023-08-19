@@ -20,36 +20,18 @@ async function fetchAPIStatus() {
     });
 }
 
-async function fetchApiToken() {
-    let apiToken = '';
-    const options = {
-        silent: true,  // prevents the command and its arguments from being displayed
-        listeners: {
-            stdout: (data) => {
-                apiToken += data.toString().trim();
-            }
-        }
-    };
-
-    await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], options);
-    
-    // core.setSecret(apiToken);  // masks the token value in logs
-
-    return apiToken;
-}
-
 async function joinHusarnet(joinCode, hostname) {
     return new Promise(async (resolve, reject) => {
-        // let apiToken = '';
-        // await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], {
-        //     listeners: {
-        //         stdout: (data) => {
-        //             apiToken += data.toString().trim(); // get the API token from stdout
-        //         }
-        //     }
-        // });
-        // core.setSecret(apiToken);
-        let apiToken = fetchApiToken();
+        let apiToken = '';
+        await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], {
+            listeners: {
+                stdout: (data) => {
+                    apiToken += data.toString().trim(); // get the API token from stdout
+                }
+            }
+        });
+        console.log("apiToken:" + apiToken);
+        core.setSecret(apiToken);
 
         console.log("apiToken:" + apiToken);
 
