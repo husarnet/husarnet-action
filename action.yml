@@ -31,9 +31,9 @@ runs:
       shell: bash
       run: |
         wget https://install.husarnet.com/tgz/husarnet-2.0.170-amd64.tar
-        tar --directory=/ --no-same-owner --dereference -xf husarnet-2.0.170-amd64.tar
-        systemctl enable husarnet
-        systemctl start husarnet
+        sudo tar --directory=/ --no-same-owner --dereference -xf husarnet-2.0.170-amd64.tar
+        sudo systemctl enable husarnet
+        sudo systemctl start husarnet
 
     - name: Check if API is ready
       shell: bash
