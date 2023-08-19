@@ -83,6 +83,7 @@ async function run() {
         while (Date.now() < endTime) {
             try {
                 const response = await fetchAPIStatus();
+                console.log(".")
                 if (response.result.is_ready_to_join) {
                     console.log("The service is ready!");
                     isReady = true;
@@ -128,7 +129,7 @@ async function run() {
         while (Date.now() < endTime) {
             try {
                 const response = await fetchAPIStatus();
-                console.log(response)
+                console.log(".")
                 if (response.result.is_joined) {
                     console.log("The device is joined!");
                     isJoined = true;
