@@ -20,6 +20,55 @@ async function fetchAPIStatus() {
     });
 }
 
+async function joinHusarnet(joinCode, hostname) {
+    return new Promise(async (resolve, reject) => {
+        let apiToken = '';
+        await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], {
+            listeners: {
+                stdout: (data) => {
+                    apiToken += data.toString().trim(); // get the API token from stdout
+                }
+            }
+        });
+
+        const postData = `secret=${apiToken}&code=${joinCode}&hostname=${hostname}`;
+        
+        const options = {
+            hostname: '127.0.0.1',
+            port: 16216,
+            path: '/api/join',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        };
+
+        const req = http.request(options, (res) => {
+            let responseData = '';
+            
+            res.on('data', (chunk) => {
+                responseData += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    resolve(responseData); // resolve with the response data
+                } else {
+                    reject(new Error(`Failed to join Husarnet. HTTP Status Code: ${res.statusCode}`));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(error);
+        });
+
+        req.write(postData);
+        req.end();
+    });
+}
+
 async function run() {
     try {
         // Install Husarnet
@@ -58,12 +107,19 @@ async function run() {
         // Joining to Husarnet network
         const joinCode = core.getInput('join-code');
         const hostname = core.getInput('hostname', { required: true });
-
+        let full_hostname;
         if (hostname === 'default-hostname') {
             const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-            await exec.exec(`sudo husarnet join ${joinCode} github-actions-${repoName}`);
+            full_hostname=`github-actions-${repoName}`;
         } else {
-            await exec.exec(`sudo husarnet join ${joinCode} ${hostname}`);
+            full_hostname = hostname
+        }
+
+        try {
+            await joinHusarnet(joinCode, full_hostname);
+        } catch (error) {
+            console.error('Failed to join Husarnet network', error);
+            core.setFailed(error.message);
         }
 
         let isJoined = false;
