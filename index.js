@@ -55,6 +55,17 @@ async function run() {
         // ... [Joining to Husarnet network logic]
         console.log("Joining to Husarnet network...");
 
+        // Joining to Husarnet network
+        const joinCode = core.getInput('join-code');
+        const hostname = core.getInput('hostname', { required: true });
+
+        if (hostname === 'default-hostname') {
+            const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
+            await exec.exec(`sudo husarnet join ${joinCode} github-actions-${repoName}`);
+        } else {
+            await exec.exec(`sudo husarnet join ${joinCode} ${hostname}`);
+        }
+
         let isJoined = false;
         endTime = Date.now() + 30000; // 30 seconds from now
 
