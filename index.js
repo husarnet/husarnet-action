@@ -148,6 +148,13 @@ async function run() {
             core.setFailed("Timeout reached while waiting for device to join");
         }
 
+        try {
+            const response = await fetchAPIStatus();
+            core.setOutput('ipv6', response.result.local_ip);
+        } catch (err) {
+            console.error('Error fetching API status:', err);
+        }
+
     } catch (error) {
         core.setFailed(error.message);
     }
