@@ -13,6 +13,8 @@ jobs:
       uses: ./
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
+        dashboard-login: ${{ secrets.DASHBOARD_LOGIN }}
+        dashboard-password: ${{ secrets.DASHBOARD_PASSWORD }}
 
     - name: Print Husarnet IPv6 addr
       run: echo ${{ steps.husarnet.outputs.ipv6 }}
