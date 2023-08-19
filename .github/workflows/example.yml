@@ -22,5 +22,3 @@ jobs:
     - name: Ping Husarnet Dashboard
       run: ping6 -c 10 fc94:b01d:1803:8dd8:b293:5c7d:7639:932a
 
-    - name: Stop husarnet
-      run: sudo systemctl stop husarnet
