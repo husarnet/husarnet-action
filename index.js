@@ -35,7 +35,7 @@ async function run() {
                 const response = await fetchAPIStatus();
                 if (response.result.is_ready_to_join) {
                     console.log("The service is ready!");
-                    return;
+                    break;
                 }
             } catch (err) {
                 console.error('Error fetching API status:', err);
