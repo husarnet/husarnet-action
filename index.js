@@ -53,6 +53,7 @@ async function run() {
         }
 
         // ... [Joining to Husarnet network logic]
+        console.log("Joining to Husarnet network...");
 
         let isJoined = false;
         endTime = Date.now() + 30000; // 30 seconds from now
@@ -60,6 +61,7 @@ async function run() {
         while (Date.now() < endTime) {
             try {
                 const response = await fetchAPIStatus();
+                console.log(response)
                 if (response.result.is_joined) {
                     console.log("The device is joined!");
                     isJoined = true;
