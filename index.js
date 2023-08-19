@@ -33,7 +33,6 @@ async function run() {
         while (Date.now() < endTime) {
             try {
                 const response = await fetchAPIStatus();
-                console.log(response);
                 if (response.result.is_ready_to_join) {
                     console.log("The service is ready!");
                     return;
@@ -52,12 +51,31 @@ async function run() {
         const joinCode = core.getInput('join-code');
         const hostname = core.getInput('hostname', { required: true });
 
+        console.log("hostname:" + hostname)
+
         if (hostname === 'default-hostname') {
             const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
             await exec.exec(`sudo husarnet join ${joinCode} github-actions-${repoName}`);
         } else {
             await exec.exec(`sudo husarnet join ${joinCode} ${hostname}`);
         }
+
+        endTime = Date.now() + 30000; // 30 seconds from now
+
+        while (Date.now() < endTime) {
+            try {
+                const response = await fetchAPIStatus();
+                if (response.result.is_joined) {
+                    console.log("The device is joined!");
+                    return;
+                }
+            } catch (err) {
+                console.error('Error fetching API status:', err);
+            }
+    
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
     } catch (error) {
         core.setFailed(error.message);
     }
