@@ -27,34 +27,40 @@ async function run() {
         const login = core.getInput('dashboard-login');
         const password = core.getInput('dashboard-password');
 
-        // Only proceed if both login and password are defined
-        if (login && password) {
-            // Login to Husarnet dashboard
-            await exec.exec(`husarnet dashboard login ${login} ${password}`);
+        if (removeHosts == 'true') {
+            // Only proceed if both login and password are defined
+            if (login && password) {
+                // Login to Husarnet dashboard
+                await exec.exec(`husarnet dashboard login ${login} ${password}`);
 
-            let parsedLocalIp;
-            try {
-                const response = await fetchAPIStatus();
-                parsedLocalIp = response.result.local_ip;
-            } catch (err) {
-                console.error('Error fetching API status:', err);
-                core.setFailed("Timeout reached while waiting for API");
-                return;
-            }
+                let parsedLocalIp;
+                try {
+                    const response = await fetchAPIStatus();
+                    parsedLocalIp = response.result.local_ip;
+                } catch (err) {
+                    console.error('Error fetching API status:', err);
+                    core.setFailed("Timeout reached while waiting for API");
+                    return;
+                }
 
-            console.log("removing: " + parsedLocalIp);
+                console.log("removing: " + parsedLocalIp);
 
-            if (parsedLocalIp) {
-                await exec.exec(`husarnet dashboard device rm ${parsedLocalIp}`);
+                if (parsedLocalIp) {
+                    await exec.exec(`husarnet dashboard device rm ${parsedLocalIp}`);
+                } else {
+                    console.error('Failed to retrieve local IP.');
+                }
             } else {
-                console.error('Failed to retrieve local IP.');
+                console.log("Both 'dashboard-login' and 'dashboard-password' must be defined to remove the host from the Husarnet group.");
             }
-        } else {
-            console.log("Both 'dashboard-login' and 'dashboard-password' must be defined to remove the host from the Husarnet group.");
         }
+
+        await exec.exec('sudo systemctl stop husarnet');
+
     } catch (error) {
         core.setFailed(error.message);
     }
+
 }
 
 run();
