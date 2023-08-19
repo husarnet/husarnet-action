@@ -85,7 +85,7 @@ async function run() {
                 const response = await fetchAPIStatus();
                 console.log(".")
                 if (response.result.is_ready_to_join) {
-                    console.log("The service is ready!");
+                    console.log("The Husarnet service is ready to join!");
                     isReady = true;
                     break;  // exit the loop
                 }
