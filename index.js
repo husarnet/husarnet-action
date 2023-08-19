@@ -1,5 +1,24 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const http = require('http');
+
+async function fetchAPIStatus() {
+    return new Promise((resolve, reject) => {
+        http.get('http://127.0.0.1:16216/api/status', (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                resolve(JSON.parse(data));
+            });
+        }).on('error', (err) => {
+            reject(err);
+        });
+    });
+}
 
 async function run() {
     try {
@@ -12,21 +31,17 @@ async function run() {
         let endTime = Date.now() + 30000; // 30 seconds from now
 
         while (Date.now() < endTime) {
-            let result = '';
-            await exec.exec('curl -s 127.0.0.1:16216/api/status', [], {
-                listeners: {
-                    stdout: (data) => {
-                        result += data.toString();
-                    }
+            try {
+                const response = await fetchAPIStatus();
+                console.log(response);
+                if (response.result.is_ready_to_join) {
+                    console.log("The service is ready!");
+                    return;
                 }
-            });
-            let isReady = JSON.parse(result).result.is_ready_to_join;
-
-            if (isReady) {
-                console.log("The service is ready!");
-                return;
+            } catch (err) {
+                console.error('Error fetching API status:', err);
             }
-
+    
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
