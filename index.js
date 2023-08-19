@@ -31,10 +31,23 @@ async function joinHusarnet(joinCode, hostname) {
         //     }
         // });
 
-        const fs = require('fs').promises;
-        let apiToken = await fs.readFile('/var/lib/husarnet/daemon_api_token', 'utf-8');
-        apiToken = apiToken.trim();
+        // const fs = require('fs').promises;
+        // let apiToken = await fs.readFile('/var/lib/husarnet/daemon_api_token', 'utf-8');
+        // apiToken = apiToken.trim();
 
+        let apiToken = '';
+    
+        const opts = {
+            silent: true,
+            listeners: {
+                stdout: (data) => {
+                    apiToken = data.toString().trim();
+                }
+            }
+        };
+    
+        await exec.exec('sudo cat /var/lib/husarnet/daemon_api_token', [], opts);
+    
         console.log("apiToken:" + apiToken);
         core.setSecret(apiToken);
 
