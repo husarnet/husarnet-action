@@ -144,6 +144,7 @@ async function run() {
 
         if (!isJoined) {
             console.error("Failed to join the device!");
+            console.error("Check the limit for the number of devices at your account at https://app.husarnet.com");
             core.setFailed("Timeout reached while waiting for device to join");
         }
 

@@ -23,6 +23,7 @@ async function fetchAPIStatus() {
 
 async function run() {
     try {
+        const removeHosts = core.getInput('remove-hosts');
         const login = core.getInput('dashboard-login');
         const password = core.getInput('dashboard-password');
 
@@ -49,7 +50,7 @@ async function run() {
                 console.error('Failed to retrieve local IP.');
             }
         } else {
-            console.log("Both 'dashboard-login' and 'dashboard-password' must be defined to proceed.");
+            console.log("Both 'dashboard-login' and 'dashboard-password' must be defined to remove the host from the Husarnet group.");
         }
     } catch (error) {
         core.setFailed(error.message);

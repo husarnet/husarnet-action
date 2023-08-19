@@ -34,25 +34,28 @@ jobs:
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
         hostname: my-hostname
-        cache-key: ${{ env.REPOSITORY_NAME }}-husarnet
+        remove-host: yes
+        dashboard-login: ${{ secrets.HUSARNET_DASHBOARD_LOGIN }}
+        dashboard-password: ${{ secrets.HUSARNET_DASHBOARD_PASSWORD }}
 ```
 
 | input | required | default value | description |
 | - | - | - | - |
 | `join-code` | yes |  | A Join Code for the Husarnet network you want to connect to. Find your Join Code at https://app.husarnet.com/  |
-| `hostname` | no | `github-actions-<repo name>` | A hostname under which this workflow will be available in your Husarnet network. |
-| `cache-key` | no | `husarnet-<repo name>` | Thanks to cache, IPv6 address will be the same in the following job runs. Another cache means generating another peer. Useful while using matrix. By default new Husarnet Client for a given repository name is created. You can reuse however the same Husarnet Client ID across multiple repos, by modifying `cache-key` value. In this case remember to have other Husarnet Clients in the same Husarnet network. |
+| `hostname` | no | `github-actions-<repo name>` | A hostname under which this workflow will be available in your Husarnet network |
+| `remove-host` | no | `true` | After the end of the workflow remove the Husarnet host (peer) associated with the GitHub workflow. To do so you **HAVE TO** set `dashboard-login` and `dashboard-password` inputs |
+| `dashboard-login` | no |  | A login to your account at https://app.husarnet.com |
+| `dashboard-password` | no |  |A password to your account at https://app.husarnet.com |
 
 ## Outputs
 
 ```yaml
     - name: Husarnet VPN
       id: husarnet
-      uses: husarnet/husarnet-action@v3
+      uses: husarnet/husarnet-action@v4
       with:
         join-code: ${{ secrets.HUSARNET_JOINCODE }}
         hostname: my-hostname
-        cache-key: husarnet-v
     
     - name: Print IPv6
       run: echo My IPv6 addr is ${{ steps.husarnet.outputs.ipv6 }}
