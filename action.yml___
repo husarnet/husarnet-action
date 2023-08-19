@@ -1,0 +1,65 @@
+name: 'Husarnet'
+description: 'Accessing other devices from Husarnet VPN network (https://husarnet.com/husarnet/husarnet) in your GitHub workflow'
+inputs:
+  join-code:
+    description: 'A Join Code for the Husarnet network you want to connect to'
+    required: true
+  hostname: 
+    description: 'A hostname under which this workflow will be available in your Husarnet network'
+    default: 'default-hostname'
+  dashboard-login:
+    description: 'Login to the Husarnet Dashboard account allowing the Husarnet Groups management (like removing the device from group when the workflow ends)'
+  dashboard-password:
+    description: 'Password to the Husarnet Dashboard account allowing the Husarnet Groups management'
+  remove-host:
+    description: 'Remove the Husarnet host created by this action after the workflow ends'
+    default: 'true'
+
+outputs:
+  ipv6:
+    description: "Husarnet IPv6 address of this hosts"
+    value: ${{ steps.output-ipv6.outputs.host-ipv6 }}
+branding:
+  icon: 'box'
+  color: 'red'
+  
+runs:
+  using: "composite"
+  steps:
+
+    - name: Installing Husarnet
+      shell: bash
+      run: |
+        wget https://install.husarnet.com/tgz/husarnet-2.0.170-amd64.tar
+        sudo tar --directory=/ --no-same-owner --dereference -xf husarnet-2.0.170-amd64.tar
+        sudo /.scripts/after_install
+
+    - name: Check if API is ready
+      shell: bash
+      run: |
+        end_time=$((SECONDS+30))
+
+        while [ $SECONDS -lt $end_time ]; do
+            result=$(curl -s 127.0.0.1:16216/api/status | jq .result.is_ready_to_join)
+            
+            if [ "$result" = "true" ]; then
+                echo "The service is ready!"
+                exit 0
+            fi
+
+            sleep 1
+        done
+
+        echo "Timeout reached!"
+        exit 1
+
+    - name: Joining to Husarnet network (default)
+      if: ${{ inputs.hostname == 'default-hostname' }}
+      shell: bash
+      run: sudo husarnet join ${{ inputs.join-code }} github-actions-$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')
+
+    - name: Joining to Husarnet network (non-default)
+      if: ${{ inputs.hostname != 'default-hostname' }}
+      shell: bash
+      run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
+

@@ -17,43 +17,10 @@ inputs:
 
 outputs:
   ipv6:
-    description: "Husarnet IPv6 address of this hosts"
-    value: ${{ steps.output-ipv6.outputs.host-ipv6 }}
-branding:
-  icon: 'box'
-  color: 'red'
-  
+    description: "Husarnet IPv6 address of this host"
 runs:
-  using: "composite"
-  steps:
-
-    - name: Installing Husarnet
-      shell: bash
-      run: |
-        wget https://install.husarnet.com/tgz/husarnet-2.0.170-amd64.tar
-        sudo tar --directory=/ --no-same-owner --dereference -xf husarnet-2.0.170-amd64.tar
-        sudo /.scripts/after_install
-
-    - name: Check if API is ready
-      shell: bash
-      run: |
-        end_time=$((SECONDS+30))
-
-        while [ $SECONDS -lt $end_time ]; do
-            result=$(curl -s 127.0.0.1:16216/api/status | jq .result.is_ready_to_join)
-            
-            if [ "$result" = "true" ]; then
-                echo "The service is ready!"
-                exit 0
-            fi
-
-            sleep 1
-        done
-
-        echo "Timeout reached!"
-        exit 1
-
-    - name: Joining to Husarnet network (non-default)
-      shell: bash
-      run: sudo husarnet join ${{ inputs.join-code }} ${{ inputs.hostname }}
-
+    using: 'node12'
+    main: 'index.js'
+branding:
+    icon: 'box'
+    color: 'red'
