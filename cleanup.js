@@ -23,11 +23,11 @@ async function fetchAPIStatus() {
 
 async function run() {
     try {
-        const removeHosts = core.getInput('remove-hosts');
+        const removeHost = core.getInput('remove-host');
         const login = core.getInput('dashboard-login');
         const password = core.getInput('dashboard-password');
 
-        if (removeHosts == 'true') {
+        if (removeHost == 'true') {
             // Only proceed if both login and password are defined
             if (login && password) {
                 // Login to Husarnet dashboard
