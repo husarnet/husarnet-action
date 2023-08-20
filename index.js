@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const http = require('http');
+const crypto = require('crypto');
 
 async function fetchAPIStatus() {
     return new Promise((resolve, reject) => {
@@ -109,7 +110,6 @@ async function run() {
         }
 
         // ... [Joining to Husarnet network logic]
-        console.log("Joining to Husarnet network...");
 
         // Joining to Husarnet network
         const joinCode = core.getInput('join-code');
@@ -117,10 +117,12 @@ async function run() {
         let full_hostname;
         if (hostname === 'default-hostname') {
             const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-            full_hostname=`github-actions-${repoName}`;
+            full_hostname=`github-actions-${repoName}-${crypto.randomBytes(4).toString('hex')}`;
         } else {
             full_hostname = hostname
         }
+
+        console.log("Joining to Husarnet network as: " + full_hostname + "...");
 
         try {
             await joinHusarnet(joinCode, full_hostname);
