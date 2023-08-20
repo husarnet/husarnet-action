@@ -110,7 +110,6 @@ async function run() {
         }
 
         // ... [Joining to Husarnet network logic]
-        console.log("Joining to Husarnet network...");
 
         // Joining to Husarnet network
         const joinCode = core.getInput('join-code');
@@ -122,6 +121,8 @@ async function run() {
         } else {
             full_hostname = hostname
         }
+
+        console.log("Joining to Husarnet network as: " + full_hostname + "...");
 
         try {
             await joinHusarnet(joinCode, full_hostname);
