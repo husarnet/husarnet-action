@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const http = require('http');
+const crypto = require('crypto');
 
 async function fetchAPIStatus() {
     return new Promise((resolve, reject) => {
@@ -117,7 +118,7 @@ async function run() {
         let full_hostname;
         if (hostname === 'default-hostname') {
             const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-            full_hostname=`github-actions-${repoName}`;
+            full_hostname=`github-actions-${repoName}-${crypto.randomBytes(4).toString('hex')}`;
         } else {
             full_hostname = hostname
         }
