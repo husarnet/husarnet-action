@@ -80,7 +80,7 @@ async function run() {
     try {
         // Install Husarnet
         await exec.exec('wget https://install.husarnet.com/tar/husarnet-latest-amd64.tar');
-        await exec.exec('sudo tar --directory=/ --no-same-owner --dereference -xf husarnet-2.0.170-amd64.tar');
+        await exec.exec('sudo tar --directory=/ --no-same-owner --dereference -xf husarnet-latest-amd64.tar');
         await exec.exec('sudo /.scripts/after_install');
 
         // Check if API is ready
